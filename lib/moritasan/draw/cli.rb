@@ -88,7 +88,17 @@ module Moritasan
       def add
         theme = YAML.load_file('theme.yml')
 
-        add_theme = { 'theme' => options[:theme], 'count' => 0, 'last_updated' => Time.now.to_i }
+        th = options[:theme]
+
+        # Check duplicate
+        theme['themes'].each do |t|
+          if t.has_value?(th)
+            puts "Duplicate theme: #{th}"
+            exit 1
+          end
+        end
+
+        add_theme = { 'theme' => th, 'count' => 0, 'last_updated' => Time.now.to_i }
         puts "Add theme: #{add_theme}"
         theme['themes'] << add_theme
 
