@@ -83,6 +83,20 @@ module Moritasan
         end
       end
 
+      option :theme, aliases:'-t', desc:'Add theme'
+      desc 'add', 'Add theme to theme.yml'
+      def add
+        theme = YAML.load_file('theme.yml')
+
+        add_theme = { 'theme' => options[:theme], 'count' => 0, 'last_updated' => Time.now.to_i }
+        puts "Add theme: #{add_theme}"
+        theme['themes'] << add_theme
+
+        open('theme.yml', 'w') do |e|
+          YAML.dump(theme, e)
+        end
+      end
+
       no_tasks do
       end
     end
