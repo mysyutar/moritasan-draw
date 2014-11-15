@@ -1,11 +1,8 @@
 ---
 words:
-  prefix: pre
-  suffix: suf
+  prefix: "本日のお題は「"
+  suffix: "」1.作品UP時は #森田さんは無口版深夜の真剣お絵描き60分一本勝負 タグをつけてください 2.キャラ/サイズ/ツール不問 でお願いします"
 themes:
-- theme: theme1
+- theme: "クリスマス"
   count: 0
-  last_updated: 1416034201
-- theme: theme2
-  count: 0
-  last_updated: 1416034201
+  last_updated: 1416040827
