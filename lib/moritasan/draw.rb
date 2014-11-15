@@ -9,11 +9,13 @@ require 'json'
 module Moritasan
   module Draw
     class Mukuchi
+      # API url
       SCHEME = 'https'
       HOST = 'api.twitter.com'
       API_VER = '1.1'
       TMP = "#{SCHEME}://#{HOST}/#{API_VER}/"
-      # endpoint
+
+      # Endpoint
       TWEET = "#{TMP}statuses/update.json"
 
       def initialize
@@ -40,6 +42,11 @@ module Moritasan
         d
         @l.info("Tweet: #{tweet}")
         res = @token.request(:post, TWEET, status: tweet)
+        if res.code == '200'
+          @l.info(res.code)
+        else
+          @l.warn(res.body)
+        end
         res.code
       end
 
