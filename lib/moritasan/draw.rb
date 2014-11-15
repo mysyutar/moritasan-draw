@@ -19,7 +19,8 @@ module Moritasan
       TWEET = "#{TMP}statuses/update.json"
 
       def initialize
-        @l = Logger.new('logs/tweet.log')
+        @l = Logger.new(STDOUT)
+        #@l = Logger.new('logs/tweet.log')
         @l.level = Logger::INFO
 
         d
