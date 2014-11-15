@@ -50,13 +50,37 @@ module Moritasan
         m.tweet(tw)
       end
 
-      option :theme, aliases:'-t', desc:'Tweet theme'
+      option :run, aliases:'-r', default: false, type: :boolean, desc:'Run tweet theme(DEFAULT: dryrun)'
       desc 'theme', 'Tweet themed tweet from theme.yml'
       def theme
         m = Mukuchi.new
         m.d
 
-        m.tweet(options[:tweet])
+        theme = YAML.load_file('theme.yml')
+
+        max_length = theme['themes'].length
+        index = rand(max_length)
+
+        th = theme['themes'][index]['theme']
+        tw = theme['words']['prefix'] + th + theme['words']['suffix']
+
+        if options[:run]
+          count = theme['themes'][index]['count']
+          count += 1
+          theme['themes'][index]['count'] = count
+
+          last_updated = Time.now.to_i
+          theme['themes'][index]['last_updated'] = last_updated
+
+          open('theme.yml', 'w') do |e|
+            YAML.dump(theme, e)
+          end
+          m.tweet(tw)
+        else
+          puts 'DRYRUN, please add -r or --run option if you want to RUN'
+          puts tw
+          exit 0
+        end
       end
 
       no_tasks do
