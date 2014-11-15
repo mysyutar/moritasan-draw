@@ -1,0 +1,10 @@
+words:
+  prefix: pre
+  suffix: suf
+themes:
+  - theme: theme1
+    count: 0
+    last_updated: 1416034201
+  - theme: theme2
+    count: 0
+    last_updated: 1416034201
