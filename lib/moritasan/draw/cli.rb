@@ -116,6 +116,15 @@ module Moritasan
         end
       end
 
+      option :word, aliases:'-w', desc:'search word'
+      desc 'themeretweet', 'Search tweet and retweet'
+      def themeretweet
+        m = Mukuchi.new
+        m.d
+
+        m.search_and_retweet(options[:word])
+      end
+
       no_tasks do
       end
     end
