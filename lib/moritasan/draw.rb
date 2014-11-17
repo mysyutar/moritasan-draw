@@ -43,10 +43,22 @@ module Moritasan
         d
         @l.info("Tweet: #{tweet}")
         res = @token.request(:post, TWEET, status: tweet)
-        if res.code == '200'
-          @l.info(res.code)
+        res_code = res.code.to_i
+        @l.info("Status code: #{res_code}")
+
+        case res_code
+        when 200
+          @l.info('Success')
         else
-          @l.warn(res.body)
+          body = JSON.load(res.body)
+          code = body['errors'][0]['code']
+          # Retry if duplicate
+          if code == 187
+            @l.warn(body)
+            # @l.warn('Retry')
+          else
+            @l.warn(body)
+          end
         end
         res.code
       end
