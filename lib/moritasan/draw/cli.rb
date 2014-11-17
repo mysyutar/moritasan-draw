@@ -7,6 +7,15 @@ module Moritasan
 
     class CLI < Thor
 
+      option :tweet, aliases:'-t', desc:'Tweet TWEET'
+      desc 'tweet', 'Tweet original TWEET'
+      def tweet
+        m = Mukuchi.new
+        m.d
+
+        m.tweet(options[:tweet])
+      end
+
       option :phraserow, aliases:'-p', desc:'Tweet phrase'
       option :interactive, aliases:'-i', type: :boolean, default: false, desc:'Select phrase by interactive mode'
       desc 'phrase', 'Tweet fixed phrase from phrase.yml'
