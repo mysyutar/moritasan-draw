@@ -116,7 +116,7 @@ module Moritasan
         end
       end
 
-      option :word, aliases:'-w', desc:'search word'
+      option :word, aliases:'-w', required: true, desc:'search word'
       desc 'themeretweet', 'Search tweet and retweet'
       def themeretweet
         m = Mukuchi.new
