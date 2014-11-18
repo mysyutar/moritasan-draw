@@ -7,7 +7,7 @@ module Moritasan
 
     class CLI < Thor
 
-      option :tweet, aliases:'-t', desc:'Tweet TWEET'
+      option :tweet, aliases:'-t', required: true, desc:'Tweet TWEET'
       desc 'tweet', 'Tweet original TWEET'
       def tweet
         m = Mukuchi.new
@@ -18,8 +18,8 @@ module Moritasan
 
       option :phraserow, aliases:'-p', desc:'Tweet phrase'
       option :interactive, aliases:'-i', type: :boolean, default: false, desc:'Select phrase by interactive mode'
-      desc 'phrase', 'Tweet fixed phrase from phrase.yml'
-      def phrase
+      desc 'tweetphrase', 'Tweet fixed phrase from phrase.yml'
+      def tweetphrase
         m = Mukuchi.new
         m.d
 
@@ -60,8 +60,8 @@ module Moritasan
       end
 
       option :run, aliases:'-r', default: false, type: :boolean, desc:'Run tweet theme(DEFAULT: dryrun)'
-      desc 'theme', 'Tweet themed tweet from theme.yml'
-      def theme
+      desc 'tweettheme', 'Tweet themed tweet from theme.yml'
+      def tweettheme
         m = Mukuchi.new
         m.d
 
@@ -92,9 +92,13 @@ module Moritasan
         end
       end
 
-      option :theme, aliases:'-t', desc:'Add theme'
-      desc 'add', 'Add theme to theme.yml'
-      def add
+      def deltweet
+
+      end
+
+      option :theme, aliases:'-t', required: true, desc:'Add theme'
+      desc 'themeadd', 'Add theme to theme.yml'
+      def themeadd
         theme = YAML.load_file('theme.yml')
 
         th = options[:theme]
@@ -117,8 +121,8 @@ module Moritasan
       end
 
       option :word, aliases:'-w', required: true, desc:'search word'
-      desc 'themeretweet', 'Search tweet and retweet'
-      def themeretweet
+      desc 'themert', 'Search tweet and retweet'
+      def themert
         m = Mukuchi.new
         m.d
 
