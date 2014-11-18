@@ -19,9 +19,11 @@ module Moritasan
 
       # Endpoint
       TWEET = "#{TMP}statuses/update#{SUFFIX}"
+      SEARCH = "#{TMP}search/tweets#{SUFFIX}"
       # retweet/:id + SUFFIX
       RETWEET = "#{TMP}statuses/retweet/"
-      SEARCH = "#{TMP}search/tweets#{SUFFIX}"
+      # destroy/:id + SUFFIX
+      DELETE = "#{TMP}statuses/destroy/"
 
       def initialize
         @l = Logger.new(STDOUT)
@@ -56,7 +58,7 @@ module Moritasan
         @l.info("Search: #{word}")
         word = URI.encode(word)
         res = @token.request(:get, "#{SEARCH}?q=#{word}")
-	response_code(res)
+        response_code(res)
 
         JSON.load(res.body).each do |k,v|
           if k == 'statuses'
@@ -76,6 +78,13 @@ module Moritasan
             end
           end
         end
+      end
+
+      def delete_tweet(id)
+        d
+
+        res = @token.request(:post, "#{DELETE}#{id}.json")
+        response_code(res)
       end
 
       # Debug method

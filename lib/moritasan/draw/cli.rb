@@ -92,8 +92,13 @@ module Moritasan
         end
       end
 
-      def deltweet
+      option :id, aliases:'-i', required: true, desc:'Delete tweet id'
+      desc 'tweetdel', 'Delete tweet by id'
+      def tweetdel
+        m = Mukuchi.new
+        m.d
 
+        m.delete_tweet(options[:id])
       end
 
       option :theme, aliases:'-t', required: true, desc:'Add theme'
