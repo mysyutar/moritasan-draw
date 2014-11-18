@@ -7,6 +7,9 @@ module Moritasan
 
     class CLI < Thor
 
+      THEME_YML = 'theme.yml'
+      PHRASE_YML = 'phrase.yml'
+
       option :tweet, aliases:'-t', required: true, desc:'Tweet TWEET'
       desc 'tweet', 'Tweet original TWEET'
       def tweet
@@ -23,7 +26,7 @@ module Moritasan
         m = Mukuchi.new
         m.d
 
-        phrase_array = YAML.load_file('phrase.yml')
+        phrase_array = load_yaml(PHRASE_YML)
 
         if options[:interactive]
           puts 'Please select index you want to tweet'
@@ -65,15 +68,18 @@ module Moritasan
         m = Mukuchi.new
         m.d
 
-        theme = YAML.load_file('theme.yml')
+        theme = load_yaml(THEME_YML)
 
+        # Random number
         max_length = theme['themes'].length
         index = rand(max_length)
 
+        # Concat theme pre + suf
         th = theme['themes'][index]['theme']
         tw = theme['words']['prefix'] + th + theme['words']['suffix']
 
         if options[:run]
+          # Update count and last_update
           count = theme['themes'][index]['count']
           count += 1
           theme['themes'][index]['count'] = count
@@ -81,9 +87,8 @@ module Moritasan
           last_updated = Time.now.to_i
           theme['themes'][index]['last_updated'] = last_updated
 
-          open('theme.yml', 'w') do |e|
-            YAML.dump(theme, e)
-          end
+          write_yaml(THEME_YML, theme)
+
           m.tweet(tw)
         else
           puts 'DRYRUN, please add -r or --run option if you want to RUN'
@@ -104,7 +109,7 @@ module Moritasan
       option :theme, aliases:'-t', required: true, desc:'Add theme'
       desc 'themeadd', 'Add theme to theme.yml'
       def themeadd
-        theme = load_yaml('theme.yml')
+        theme = load_yaml(THEME_YML)
         arg = options[:theme]
 
         # Duplicate is exit
@@ -115,28 +120,26 @@ module Moritasan
           puts "Add theme: #{add_theme}"
           theme['themes'] << add_theme
 
-          open('theme.yml', 'w') do |e|
-            YAML.dump(theme, e)
-          end
+          write_yaml(THEME_YML, theme)
         end
      end
 
       option :theme, aliases:'-t', required: true, desc:'Delete theme'
       desc 'themedel', 'Delete theme to theme.yml'
       def themedel
-        theme = load_yaml('theme.yml')
+        theme = load_yaml(THEME_YML)
         arg = options[:theme]
 
         # Duplicate is delete
         if duplicate_theme(theme, arg)
           theme['themes'].each do |t|
             if t.has_value?(arg)
+              puts "Delete theme: #{t}"
               theme['themes'].delete(t)
             end
           end
-          open('theme.yml', 'w') do |e|
-            YAML.dump(theme, e)
-          end
+
+          write_yaml(THEME_YML, theme)
         end
       end
 
@@ -151,7 +154,13 @@ module Moritasan
 
       no_tasks do
         def load_yaml(file)
-          YAML.load_file('theme.yml')
+          YAML.load_file(file)
+        end
+
+        def write_yaml(file, theme)
+          open(file, 'w') do |e|
+            YAML.dump(theme, e)
+          end
         end
 
         # Check duplicate
