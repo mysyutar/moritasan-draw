@@ -104,24 +104,39 @@ module Moritasan
       option :theme, aliases:'-t', required: true, desc:'Add theme'
       desc 'themeadd', 'Add theme to theme.yml'
       def themeadd
-        theme = YAML.load_file('theme.yml')
+        theme = load_yaml('theme.yml')
+        arg = options[:theme]
 
-        th = options[:theme]
+        # Duplicate is exit
+        if duplicate_theme(theme, arg)
+          exit 1
+        else
+          add_theme = { 'theme' => arg, 'count' => 0, 'last_updated' => Time.now.to_i }
+          puts "Add theme: #{add_theme}"
+          theme['themes'] << add_theme
 
-        # Check duplicate
-        theme['themes'].each do |t|
-          if t.has_value?(th)
-            puts "Duplicate theme: #{th}"
-            exit 1
+          open('theme.yml', 'w') do |e|
+            YAML.dump(theme, e)
           end
         end
+     end
 
-        add_theme = { 'theme' => th, 'count' => 0, 'last_updated' => Time.now.to_i }
-        puts "Add theme: #{add_theme}"
-        theme['themes'] << add_theme
+      option :theme, aliases:'-t', required: true, desc:'Delete theme'
+      desc 'themedel', 'Delete theme to theme.yml'
+      def themedel
+        theme = load_yaml('theme.yml')
+        arg = options[:theme]
 
-        open('theme.yml', 'w') do |e|
-          YAML.dump(theme, e)
+        # Duplicate is delete
+        if duplicate_theme(theme, arg)
+          theme['themes'].each do |t|
+            if t.has_value?(arg)
+              theme['themes'].delete(t)
+            end
+          end
+          open('theme.yml', 'w') do |e|
+            YAML.dump(theme, e)
+          end
         end
       end
 
@@ -135,6 +150,20 @@ module Moritasan
       end
 
       no_tasks do
+        def load_yaml(file)
+          YAML.load_file('theme.yml')
+        end
+
+        # Check duplicate
+        def duplicate_theme(theme, arg)
+          theme['themes'].each do |t|
+            if t.has_value?(arg)
+              puts "Duplicate theme: #{arg}"
+              return true
+            end
+          end
+          return false
+        end
       end
     end
   end
