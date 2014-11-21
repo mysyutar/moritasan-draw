@@ -152,6 +152,34 @@ module Moritasan
         m.search_and_retweet(options[:word])
       end
 
+      desc 'favshow', 'Show favolite tweets'
+      def favshow
+        m = Mukuchi.new
+        m.d
+
+        100.times do
+          m.favolites
+        end
+      end
+
+      option :id, aliases:'-i', required: true, desc:'Tweet id'
+      desc 'fav', 'Favolite tweet'
+      def fav
+        m = Mukuchi.new
+        m.d
+
+        m.favolite(options[:id])
+      end
+
+      option :id, aliases:'-i', required: true, desc:'Tweet id'
+      desc 'favdel', 'Unfavolite tweet'
+      def favdel
+        m = Mukuchi.new
+        m.d
+
+        m.unfavolite(options[:id])
+      end
+
       no_tasks do
         def load_yaml(file)
           YAML.load_file(file)

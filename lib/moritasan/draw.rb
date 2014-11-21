@@ -20,6 +20,9 @@ module Moritasan
       # Endpoint
       TWEET = "#{TMP}statuses/update#{SUFFIX}"
       SEARCH = "#{TMP}search/tweets#{SUFFIX}"
+      FAVLIST = "#{TMP}favorites/list#{SUFFIX}"
+      FAV = "#{TMP}favorites/create#{SUFFIX}"
+      UNFAV = "#{TMP}favorites/destroy#{SUFFIX}"
       # retweet/:id + SUFFIX
       RETWEET = "#{TMP}statuses/retweet/"
       # destroy/:id + SUFFIX
@@ -84,6 +87,38 @@ module Moritasan
         d
 
         res = @token.request(:post, "#{DELETE}#{id}.json")
+        response_code(res)
+      end
+
+      def favolites
+        d
+
+        res = @token.request(:get, "#{FAVLIST}")
+        response_code(res)
+
+        body = JSON.load(res.body)
+        body.each do |k|
+          @l.info(k['id'])
+          @l.info(k['text'])
+          @l.info(k['user']['screen_name'])
+          unfavolite(k['id'])
+          ran = rand(20)
+          puts ran
+          sleep ran
+        end
+      end
+
+      def favolite(id)
+        d
+
+        res = @token.request(:post, "#{FAV}?id=#{id}")
+        response_code(res)
+      end
+
+      def unfavolite(id)
+        d
+
+        res = @token.request(:post, "#{UNFAV}?id=#{id}")
         response_code(res)
       end
 
