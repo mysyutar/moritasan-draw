@@ -18,6 +18,7 @@ module Moritasan
       SUFFIX = '.json'
 
       # Endpoint
+      RATE = "#{TMP}application/rate_limit_status#{SUFFIX}"
       TWEET = "#{TMP}statuses/update#{SUFFIX}"
       SEARCH = "#{TMP}search/tweets#{SUFFIX}"
       FAVLIST = "#{TMP}favorites/list#{SUFFIX}"
@@ -125,6 +126,24 @@ module Moritasan
       # Debug method
       def d
         @l.debug(caller[0][/`([^']*)'/, 1])
+      end
+
+      def rate_limit(resource=nil)
+        if resource.nil?
+          rate = RATE
+        else
+          rate = "#{RATE}?resources=#{resource}"
+        end
+
+        res = @token.request(:get, rate)
+        response_code(res)
+
+        body = JSON.load(res.body)
+        if resource.nil?
+          pp body['resources']
+        else
+          pp body['resources'][resource]
+        end
       end
 
       def response_code(res)
