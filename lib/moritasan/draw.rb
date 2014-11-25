@@ -66,7 +66,7 @@ module Moritasan
 
         JSON.load(res.body).each do |k,v|
           if k == 'statuses'
-            v.each do |tweet|
+            v.reverse_each do |tweet|
               # Exclude Retweet
               if tweet['retweeted_status'].nil?
                 id = tweet['id']
