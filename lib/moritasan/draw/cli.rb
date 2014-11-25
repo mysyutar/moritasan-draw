@@ -10,6 +10,14 @@ module Moritasan
       THEME_YML = 'theme.yml'
       PHRASE_YML = 'phrase.yml'
 
+      desc 'stream', 'Stream'
+      def stream
+        m = Mukuchi.new
+        m.d
+
+        m.stream
+      end
+
       option :tweet, aliases:'-t', required: true, desc:'Tweet TWEET'
       desc 'tweet', 'Tweet original TWEET'
       def tweet

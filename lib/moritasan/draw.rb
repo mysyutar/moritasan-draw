@@ -6,6 +6,7 @@ require 'dotenv'
 require 'oauth'
 require 'json'
 require 'uri'
+require 'twitter'
 
 module Moritasan
   module Draw
@@ -20,14 +21,15 @@ module Moritasan
       # Endpoint
       RATE = "#{TMP}application/rate_limit_status#{SUFFIX}"
       TWEET = "#{TMP}statuses/update#{SUFFIX}"
-      SEARCH = "#{TMP}search/tweets#{SUFFIX}"
-      FAVLIST = "#{TMP}favorites/list#{SUFFIX}"
-      FAV = "#{TMP}favorites/create#{SUFFIX}"
-      UNFAV = "#{TMP}favorites/destroy#{SUFFIX}"
       # retweet/:id + SUFFIX
       RETWEET = "#{TMP}statuses/retweet/"
       # destroy/:id + SUFFIX
       DELETE = "#{TMP}statuses/destroy/"
+      SEARCH = "#{TMP}search/tweets#{SUFFIX}"
+      FOLLOW = "#{TMP}friendships/create#{SUFFIX}"
+      FAVLIST = "#{TMP}favorites/list#{SUFFIX}"
+      FAV = "#{TMP}favorites/create#{SUFFIX}"
+      UNFAV = "#{TMP}favorites/destroy#{SUFFIX}"
 
       def initialize
         #@l = Logger.new(STDOUT)
@@ -48,6 +50,31 @@ module Moritasan
           ENV['ACCESS_TOKEN'],
           ENV['ACCESS_TOKEN_SECRET']
         )
+      end
+
+      def stream
+        client_stream = Twitter::Streaming::Client.new do |config|
+          config.consumer_key = ENV['CONSUMER_KEY']
+          config.consumer_secret = ENV['CONSUMER_SECRET']
+          config.access_token = ENV['ACCESS_TOKEN']
+          config.access_token_secret = ENV['ACCESS_TOKEN_SECRET']
+        end
+
+        client_stream.user do |obj|
+          case obj
+          when Twitter::Tweet
+            if obj.text =~ /#森田さんは無口版深夜の真剣お絵描き60分一本勝負/
+              retweet(obj.id)
+            end
+          when Twitter::Streaming::Event
+            case obj.name
+            when :follow
+              follow(obj.source.id)
+            end
+          else
+            pp obj
+          end
+        end
       end
 
       # Posted tweet
@@ -76,9 +103,8 @@ module Moritasan
                 text = tweet['text']
 
                 @l.info("Retweet: #{screen_name} / #{name} - #{id} - #{text}")
-                res = @token.request(:post, "#{RETWEET}#{id}.json")
+                retweet(id)
                 sleep rand(10)
-                response_code(res)
               end
             end
           end
@@ -88,9 +114,27 @@ module Moritasan
       def delete_tweet(id)
         d
 
+        @l.info("Delete: #{id}")
         res = @token.request(:post, "#{DELETE}#{id}.json")
         response_code(res)
       end
+
+      def retweet(id)
+        d
+
+        @l.info("Retweet: #{id}")
+        res = @token.request(:post, "#{RETWEET}#{id}.json")
+        response_code(res)
+      end
+
+      def follow(id)
+        d
+
+        @l.info("Follow: #{id}")
+        res = @token.request(:post, "#{FOLLOW}?user_id=#{id}")
+        response_code(res)
+      end
+
 
       def favolites
         d
