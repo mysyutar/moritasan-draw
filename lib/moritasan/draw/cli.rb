@@ -157,9 +157,7 @@ module Moritasan
         m = Mukuchi.new
         m.d
 
-        100.times do
-          m.favolites
-        end
+        m.favolites
       end
 
       option :id, aliases:'-i', required: true, desc:'Tweet id'

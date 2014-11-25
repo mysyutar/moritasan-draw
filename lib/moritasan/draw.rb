@@ -30,8 +30,9 @@ module Moritasan
       DELETE = "#{TMP}statuses/destroy/"
 
       def initialize
-        @l = Logger.new(STDOUT)
-        #@l = Logger.new('logs/tweet.log')
+        #@l = Logger.new(STDOUT)
+        @l = Logger.new('logs/tweet.log')
+        #@l = Logger.new('logs/unfav.log')
         @l.level = Logger::INFO
 
         d
@@ -94,18 +95,13 @@ module Moritasan
       def favolites
         d
 
+        rate_limit('favorites')
         res = @token.request(:get, "#{FAVLIST}")
         response_code(res)
 
         body = JSON.load(res.body)
         body.each do |k|
-          @l.info(k['id'])
-          @l.info(k['text'])
-          @l.info(k['user']['screen_name'])
-          unfavolite(k['id'])
-          ran = rand(20)
-          puts ran
-          sleep ran
+          puts "#{k['id']}#{k['user']['screen_name']} #{k['text']}"
         end
       end
 
@@ -142,7 +138,12 @@ module Moritasan
         if resource.nil?
           pp body['resources']
         else
-          pp body['resources'][resource]
+          resource = body['resources'][resource]['/favorites/list']
+          pp resource
+          if resource['remaining'] == 0
+            pp "#{resource['reset'] - Time.now.to_i} sec"
+            exit 1
+          end
         end
       end
 
